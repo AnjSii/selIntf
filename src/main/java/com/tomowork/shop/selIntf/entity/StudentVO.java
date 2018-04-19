@@ -1,4 +1,4 @@
-package com.restful.test.entity;
+package com.tomowork.shop.selIntf.entity;
 
 public class StudentVO {
 

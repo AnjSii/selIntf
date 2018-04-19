@@ -10,7 +10,6 @@
 		<version>2.18.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>shop-selIntf</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<dependencies>
@@ -22,6 +21,12 @@
 		<dependency>
 			<groupId>com.tomowork.shop</groupId>
 			<artifactId>shop-base</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tomowork.shop</groupId>
+			<artifactId>shop-api</artifactId>
+			<version>1.2.0</version>
 		</dependency>
 
 		<dependency>
@@ -62,6 +67,44 @@
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 		<!-- SPRING end -->
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- AOP begin -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- AOP end -->
+
+		<!-- Connection Pool begin -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- jdbc driver -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- WEB begin -->
 		<dependency>

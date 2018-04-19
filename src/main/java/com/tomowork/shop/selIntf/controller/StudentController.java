@@ -1,7 +1,8 @@
-package com.restful.test.controller;
+package com.tomowork.shop.selIntf.controller;
 
-import com.restful.test.entity.StudentVO;
-import com.restful.test.service.StudentService;
+import com.tomowork.shop.selIntf.entity.StudentVO;
+import com.tomowork.shop.selIntf.service.StudentService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

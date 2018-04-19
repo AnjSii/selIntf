@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
+		monitoring="autodetect" dynamicConfig="false">
+	<diskStore path="java.io.tmpdir/hicailiao/ehcache" />
+	<defaultCache maxElementsInMemory="16000" eternal="false"
+		timeToIdleSeconds="120" timeToLiveSeconds="120" diskSpoolBufferSizeMB="100"
+		overflowToDisk="true" maxEntriesLocalDisk="10000000" diskExpiryThreadIntervalSeconds="120"
+		clearOnFlush="true" memoryStoreEvictionPolicy="LRU" statistics="true">
+	</defaultCache>
+	
+	<cache
+		name="org.hibernate.cache.spi.UpdateTimestampsCache"
+		maxElementsInMemory="20000"
+		eternal="true">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache
+		name="org.hibernate.cache.internal.StandardQueryCache"
+		maxElementsInMemory="2000"
+		timeToLiveSeconds="120"
+		eternal="false">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.Accessory"
+		maxElementsInMemory="20000"
+		timeToLiveSeconds="3600">
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.Album"
+		maxElementsInMemory="1000"
+		timeToLiveSeconds="3600">
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.Area"
+		maxElementsInMemory="5000"
+		timeToLiveSeconds="1200">
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.Goods"
+		maxElementsInMemory="10000"
+		timeToLiveSeconds="600">
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.Role"
+		maxElementsInMemory="5000"
+		timeToLiveSeconds="300">
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.RoleGroup"
+		maxElementsInMemory="5000"
+		timeToLiveSeconds="300">
+	</cache>
+	
+	<cache
+		name="com.tomowork.shop.foundation.domain.Store"
+		maxElementsInMemory="1000"
+		timeToLiveSeconds="1200">
+	</cache>
+	
+	<cache name="SimplePageFragmentCachingFilter"
+		maxElementsInMemory="200"
+		maxElementsOnDisk="200"
+		eternal="false"
+		overflowToDisk="true"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="181"
+		timeToLiveSeconds="181"
+		memoryStoreEvictionPolicy="LFU" />
+
+	<cache name="SimplePageCachingFilter"
+		maxElementsInMemory="200"
+		maxElementsOnDisk="400"
+		eternal="false"
+		overflowToDisk="true"
+		diskSpoolBufferSizeMB="20"
+		timeToIdleSeconds="61"
+		timeToLiveSeconds="181"
+		memoryStoreEvictionPolicy="LFU" />
+
+	<!-- 单独对某个entity的缓存策略设置 <cache name="com.tomowork.shop.domain.User" maxElementsInMemory="100" 
+		eternal="false" timeToIdleSeconds="1200" timeToLiveSeconds="1200" overflowToDisk="true" 
+		clearOnFlush="true"> </cache> -->
+</ehcache>

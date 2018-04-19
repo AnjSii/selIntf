@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-4.3.xsd
+						http://www.springframework.org/schema/tx
+						http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager"
+		  class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 启用支持Annotation注解方式的事务管理 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<context:component-scan base-package="com">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController" />
+		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
+
+	<!-- 定义了与实体相关的dao -->
+	<bean id="genericEntityDao"
+		  class="com.tomowork.shop.core.base.GenericEntityDao" scope="prototype"
+		  lazy-init="true">
+	</bean>
+
+	<!-- 配置JPA -->
+	<bean name="entityManagerFactory"
+		  class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="hicailiao-1.0" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.tomowork.shop.foundation.domain</value>
+			</list>
+		</property>
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="false" />
+				<property name="generateDdl" value="false" />
+				<property name="databasePlatform" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+			</bean>
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+				<prop key="hibernate.cache.provider_configuration_file_resource_path">/ehcache.xml</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.auto_evict_collection_cache">true</prop>
+				<prop key="hibernate.use_sql_comments">false</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.generate_statistics">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">validate</prop>
+				<prop key="hibernate.id.new_generator_mappings">false</prop>
+				<prop key="hibernate.implicit_naming_strategy">legacy-jpa</prop>
+				<prop key="javax.persistence.sharedCache.mode">ENABLE_SELECTIVE</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="jacksonHttpMessageConverter"
+		  class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="prettyPrint" value="true" />
+		<property name="objectMapper">
+			<bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+				<property name="serializationInclusion" value="NON_NULL" />
+				<property name="featuresToDisable">
+					<array>
+						<util:constant static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
+					</array>
+				</property>
+				<property name="timeZone" value="GMT+08:00" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="assetsUriFactory"
+		  class="com.tomowork.shop.util.BaseURIFactoryBean">
+		<property name="uri" value="${assets.url}" />
+	</bean>
+
+	<bean id="imageUriFactory"
+		  class="com.tomowork.shop.util.HashURIFactoryBean">
+		<property name="uris" value="${images.url}" />
+	</bean>
+
+	<beans profile="dev">
+		<!-- property-placeholder是一个属性遍历器，定位一个属性文件，属性文件存放的是jdbc一些连接数据 -->
+		<context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true" />
+		<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />
+
+		<!-- 数据源配置, 数据库连接池 -->
+		<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+			<!-- 数据源驱动类可不写，Druid默认会自动根据URL识别DriverClass -->
+			<property name="driverClassName" value="${jdbc.driverClassName}" />
+
+			<!-- 基本属性 url、user、password -->
+			<property name="url" value="${jdbc.url}" />
+			<property name="username" value="${jdbc.username}" />
+			<property name="password" value="${jdbc.password}" />
+
+			<!-- 配置初始化大小、最小、最大 -->
+			<property name="initialSize" value="${jdbc.initialSize}" />
+			<property name="minIdle" value="${jdbc.minIdle}" />
+			<property name="maxActive" value="${jdbc.maxActive}" />
+
+			<!-- 配置获取连接等待超时的时间 -->
+			<property name="maxWait" value="60000" />
+
+			<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+			<property name="timeBetweenEvictionRunsMillis" value="60000" />
+
+			<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+			<property name="minEvictableIdleTimeMillis" value="300000" />
+
+			<!-- 用来验证数据库连接的查询语句，这个查询语句必须是至少返回一条数据的SELECT语句 -->
+			<property name="validationQuery" value="${jdbc.testSql}" />
+			<property name="testWhileIdle" value="true" />
+			<property name="testOnBorrow" value="false" />
+			<property name="testOnReturn" value="false" />
+
+			<!-- 关闭自动提交 -->
+			<property name="defaultAutoCommit" value="false" />
+
+			<!-- 配置监控统计拦截的filters -->
+			<property name="filters" value="stat" />
+		</bean>
+
+		<!-- 异常处理 -->
+		<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+			<property name="exceptionMappings">
+				<!-- shrio 权限异常处理 -->
+				<props>
+					<prop key="org.apache.shiro.authz.UnauthorizedException">redirect:/403.htm</prop>
+				</props>
+			</property>
+		</bean>
+	</beans>
+</beans>

@@ -1,7 +1,8 @@
-package com.restful.test.service.impl;
+package com.tomowork.shop.selIntf.service.impl;
 
-import com.restful.test.entity.StudentVO;
-import com.restful.test.service.StudentService;
+import com.tomowork.shop.selIntf.entity.StudentVO;
+import com.tomowork.shop.selIntf.service.StudentService;
+
 import org.springframework.stereotype.Service;
 
 @Service
