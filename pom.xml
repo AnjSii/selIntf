@@ -30,6 +30,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.tomowork.spring</groupId>
+			<artifactId>spring-security-tmtoken</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tomowork.spring</groupId>
+			<artifactId>spring-webmvc-resource-range</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
 		</dependency>
@@ -67,6 +78,21 @@
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 		<!-- SPRING end -->
+
+		<!-- SPRING SECURITY begin -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+		</dependency>
+		<!-- SPRING SECURITY end -->
 
 		<dependency>
 			<groupId>org.hibernate</groupId>

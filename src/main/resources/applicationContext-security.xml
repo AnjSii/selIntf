@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-4.3.xsd
+						http://www.springframework.org/schema/security
+						http://www.springframework.org/schema/security/spring-security-4.2.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+	<!-- 生成 TM-TOKEN 权限验证拦截 -->
+	<security:http pattern="/token" use-expressions="false" create-session="stateless" entry-point-ref="restAuthenticationEntryPoint" authentication-manager-ref="daoAuthenticationManager">
+		<security:intercept-url pattern="/token" />
+		<security:csrf disabled="true" />
+		<security:custom-filter ref="basicAuthenticationFilter" position="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="tokenResponseGeneratingFilter" position="LAST" />
+	</security:http>
+
+	<!-- 正常权限验证拦截 -->
+	<security:http pattern="/**" create-session="stateless" entry-point-ref="restAuthenticationEntryPoint" authentication-manager-ref="tokenAuthenticationManager">
+		<security:csrf disabled="true" />
+		<security:custom-filter ref="tmTokenAuthenticationFilter" position="BASIC_AUTH_FILTER" />
+	</security:http>
+
+	<bean id="basicAuthenticationFilter"
+	      class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+		<constructor-arg ref="daoAuthenticationManager" />
+		<constructor-arg ref="restAuthenticationEntryPoint" />
+	</bean>
+
+	<bean id="tokenResponseGeneratingFilter"
+	      class="com.tomowork.spring.security.web.filter.DefaultTMTokenResponseGeneratingFilter">
+		<property name="tokenService" ref="tokenService" />
+	</bean>
+
+	<bean id="tmTokenAuthenticationFilter"
+	      class="com.tomowork.spring.security.web.filter.TMTokenAuthenticationFilter">
+		<constructor-arg ref="tokenAuthenticationManager" />
+		<constructor-arg ref="restAuthenticationEntryPoint" />
+		<property name="tokenService" ref="tokenService" />
+	</bean>
+
+	<bean id="tokenService"
+	      class="com.tomowork.spring.security.token.TMTokenV1Service">
+		<property name="cipherService" ref="cipherService" />
+		<property name="cipherKeyManager" ref="cipherKeyManager" />
+		<property name="defaultTokenTTL" value="600000" /> <!-- 10 Minutes -->
+	</bean>
+
+	<bean id="cipherService"
+	      class="com.tomowork.spring.security.crypto.AesGCMCipherService" />
+
+	<bean id="cipherKeyManager"
+	      class="com.tomowork.spring.security.crypto.AesCipherKeyManager" />
+
+	<bean id="restAuthenticationEntryPoint"
+	      class="com.tomowork.shop.selIntf.security.RestAuthenticationEntryPoint">
+		<property name="messageConverter" ref="jacksonHttpMessageConverter" />
+	</bean>
+
+	<bean id="tokenAuthenticationProvider"
+	      class="com.tomowork.spring.security.authentication.TMAuthenticationProvider" />
+
+	<bean id="daoAuthenticationProvider"
+	      class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		<property name="userDetailsService">
+			<bean class="com.tomowork.shop.selIntf.security.TMUserDetailsService">
+				<property name="userService" ref="userServiceImpl" />
+			</bean>
+		</property>
+		<property name="passwordEncoder">
+			<bean class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
+		</property>
+	</bean>
+
+	<security:authentication-manager id="tokenAuthenticationManager">
+		<security:authentication-provider ref="tokenAuthenticationProvider" />
+	</security:authentication-manager>
+
+	<security:authentication-manager id="daoAuthenticationManager">
+		<security:authentication-provider ref="daoAuthenticationProvider" />
+	</security:authentication-manager>
+
+	<beans profile="dev">
+		<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />
+	</beans>
+</beans>
