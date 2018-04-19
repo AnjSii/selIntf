@@ -32,6 +32,9 @@
 		<property name="favorPathExtension" value="false" />
 	</bean>
 
+	<!-- JSR-303 Method level validation -->
+	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
+
 	<beans profile="dev">
 		<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />
 	</beans>
