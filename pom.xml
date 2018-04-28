@@ -17,7 +17,6 @@
 			<groupId>com.tomowork.shop</groupId>
 			<artifactId>shop-utils</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.tomowork.shop</groupId>
 			<artifactId>shop-base</artifactId>
@@ -38,6 +37,12 @@
 			<groupId>com.tomowork.spring</groupId>
 			<artifactId>spring-webmvc-resource-range</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tomowork.spring</groupId>
+			<artifactId>spring-webmvc-apiversion</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 
 		<dependency>
