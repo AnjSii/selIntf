@@ -4,18 +4,21 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:util="http://www.springframework.org/schema/util"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 	                    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 	                    http://www.springframework.org/schema/mvc
 	                    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+	                    http://www.springframework.org/schema/context
+	                    http://www.springframework.org/schema/context/spring-context-4.3.xsd
 	                    http://www.springframework.org/schema/aop
 	                    http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
-	                    http://www.springframework.org/schema/context
-	                    http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	                    http://www.springframework.org/schema/util
+	                    http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
 	<context:component-scan base-package="com.tomowork.shop.selIntf" use-default-filters="false">
-		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
-		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController" />
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ExceptionHandler" />
 	</context:component-scan>
 
@@ -23,8 +26,12 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 
 	<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
+		<mvc:argument-resolvers>
+			<bean class="com.tomowork.spring.web.method.annotation.RangeHeaderMethodArgumentResolver" />
+		</mvc:argument-resolvers>
+
 		<mvc:message-converters register-defaults="false">
-			<ref bean="jacksonHttpMessageConverter"/>
+			<ref bean="jacksonHttpMessageConverter" />
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 
@@ -32,8 +39,28 @@
 		<property name="favorPathExtension" value="false" />
 	</bean>
 
+	<!-- 支持 ApiVersion 注解版本号, 替换 mvc:annotation-driven 注入的RequestMappingHandlerMapping -->
+	<bean class="com.tomowork.spring.web.servlet.mvc.method.annotation.VersionRequestMappingHandlerMapping" id="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="useSuffixPatternMatch" value="false" />
+		<property name="contentNegotiationManager" ref="contentNegotiationManager" />
+	</bean>
+
+	<bean class="com.tomowork.spring.web.servlet.mvc.method.annotation.AcceptResourceRangeAdvice" />
+
 	<!-- JSR-303 Method level validation -->
 	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
+
+	<!--文件上传设置-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<value>10485760</value><!-- 文件上传最大为10M -->
+		</property>
+		<property name="maxInMemorySize" value="4096" />
+	</bean>
+
+	<beans profile="testing">
+		<context:property-placeholder location="classpath:config-test.properties" ignore-unresolvable="true" />
+	</beans>
 
 	<beans profile="dev">
 		<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />

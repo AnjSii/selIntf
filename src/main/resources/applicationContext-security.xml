@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:security="http://www.springframework.org/schema/security"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 						http://www.springframework.org/schema/context
 						http://www.springframework.org/schema/context/spring-context-4.3.xsd
@@ -23,51 +23,60 @@
 
 	<!-- 正常权限验证拦截 -->
 	<security:http pattern="/**" create-session="stateless" entry-point-ref="restAuthenticationEntryPoint" authentication-manager-ref="tokenAuthenticationManager">
+		<security:intercept-url pattern="/address**/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/favorites**/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/order**/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/storeCart**/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/trade/alipay" access="isAuthenticated()" />
+		<security:intercept-url pattern="/userProfile**/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/couponInfo" access="isAuthenticated()" />
+		<security:intercept-url pattern="/password" access="isAuthenticated()" />
+		<security:intercept-url pattern="/qrlogin/**" access="isAuthenticated()" />
 		<security:csrf disabled="true" />
 		<security:custom-filter ref="tmTokenAuthenticationFilter" position="BASIC_AUTH_FILTER" />
 	</security:http>
 
 	<bean id="basicAuthenticationFilter"
-	      class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+		  class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
 		<constructor-arg ref="daoAuthenticationManager" />
 		<constructor-arg ref="restAuthenticationEntryPoint" />
 	</bean>
 
 	<bean id="tokenResponseGeneratingFilter"
-	      class="com.tomowork.spring.security.web.filter.DefaultTMTokenResponseGeneratingFilter">
+		  class="com.tomowork.spring.security.web.filter.DefaultTMTokenResponseGeneratingFilter">
 		<property name="tokenService" ref="tokenService" />
 	</bean>
 
 	<bean id="tmTokenAuthenticationFilter"
-	      class="com.tomowork.spring.security.web.filter.TMTokenAuthenticationFilter">
+		  class="com.tomowork.spring.security.web.filter.TMTokenAuthenticationFilter">
 		<constructor-arg ref="tokenAuthenticationManager" />
 		<constructor-arg ref="restAuthenticationEntryPoint" />
 		<property name="tokenService" ref="tokenService" />
 	</bean>
 
 	<bean id="tokenService"
-	      class="com.tomowork.spring.security.token.TMTokenV1Service">
+		  class="com.tomowork.spring.security.token.TMTokenV1Service">
 		<property name="cipherService" ref="cipherService" />
 		<property name="cipherKeyManager" ref="cipherKeyManager" />
 		<property name="defaultTokenTTL" value="600000" /> <!-- 10 Minutes -->
 	</bean>
 
 	<bean id="cipherService"
-	      class="com.tomowork.spring.security.crypto.AesGCMCipherService" />
+		  class="com.tomowork.spring.security.crypto.AesGCMCipherService" />
 
 	<bean id="cipherKeyManager"
-	      class="com.tomowork.spring.security.crypto.AesCipherKeyManager" />
+		  class="com.tomowork.spring.security.crypto.AesCipherKeyManager" />
 
 	<bean id="restAuthenticationEntryPoint"
-	      class="com.tomowork.shop.selIntf.security.RestAuthenticationEntryPoint">
+		  class="com.tomowork.shop.selIntf.security.RestAuthenticationEntryPoint">
 		<property name="messageConverter" ref="jacksonHttpMessageConverter" />
 	</bean>
 
 	<bean id="tokenAuthenticationProvider"
-	      class="com.tomowork.spring.security.authentication.TMAuthenticationProvider" />
+		  class="com.tomowork.spring.security.authentication.TMAuthenticationProvider" />
 
 	<bean id="daoAuthenticationProvider"
-	      class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+		  class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
 		<property name="userDetailsService">
 			<bean class="com.tomowork.shop.selIntf.security.TMUserDetailsService">
 				<property name="userService" ref="userServiceImpl" />
@@ -78,6 +87,35 @@
 		</property>
 	</bean>
 
+	<bean id="jacksonHttpMessageConverter"
+		  class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="prettyPrint" value="${json.prettyPrint}" />
+		<property name="objectMapper">
+			<bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+				<property name="serializationInclusion" value="NON_NULL" />
+				<property name="featuresToDisable">
+					<array>
+						<util:constant static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
+					</array>
+				</property>
+				<property name="timeZone" value="GMT+08:00" />
+			</bean>
+		</property>
+		<property name="supportedMediaTypes">
+			<list>
+				<!-- TODO 客户端升级发布后，去掉 application/json 支持(兼容不支持版本号的旧版本客户端) -->
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg value="application" />
+					<constructor-arg value="json" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg value="application" />
+					<constructor-arg value="vnd.hicailiao+json" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 	<security:authentication-manager id="tokenAuthenticationManager">
 		<security:authentication-provider ref="tokenAuthenticationProvider" />
 	</security:authentication-manager>
@@ -85,6 +123,10 @@
 	<security:authentication-manager id="daoAuthenticationManager">
 		<security:authentication-provider ref="daoAuthenticationProvider" />
 	</security:authentication-manager>
+
+	<beans profile="testing">
+		<context:property-placeholder location="classpath:config-test.properties" ignore-unresolvable="true" />
+	</beans>
 
 	<beans profile="dev">
 		<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />

@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:context="http://www.springframework.org/schema/context"
-		xmlns:tx="http://www.springframework.org/schema/tx"
-		xmlns:util="http://www.springframework.org/schema/util"
-		xmlns:jee="http://www.springframework.org/schema/jee"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:jee="http://www.springframework.org/schema/jee"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 						http://www.springframework.org/schema/context
 						http://www.springframework.org/schema/context/spring-context-4.3.xsd
 						http://www.springframework.org/schema/tx
 						http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
-						http://www.springframework.org/schema/util
-						http://www.springframework.org/schema/util/spring-util-4.3.xsd
 						http://www.springframework.org/schema/jee
 						http://www.springframework.org/schema/jee/spring-jee-4.3.xsd">
 
@@ -23,25 +20,9 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ExceptionHandler" />
 	</context:component-scan>
 
-	<bean id="jacksonHttpMessageConverter"
-		  class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-		<property name="prettyPrint" value="true" />
-		<property name="objectMapper">
-			<bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
-				<property name="serializationInclusion" value="NON_NULL" />
-				<property name="featuresToDisable">
-					<array>
-						<util:constant static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
-					</array>
-				</property>
-				<property name="timeZone" value="GMT+08:00" />
-			</bean>
-		</property>
-	</bean>
-
 	<!-- 配置事务管理器 -->
 	<bean id="transactionManager"
-	      class="org.springframework.orm.jpa.JpaTransactionManager">
+		  class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
@@ -50,7 +31,7 @@
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean name="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		  class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="hicailiao-1.0" />
 		<property name="packagesToScan">
 			<list>
@@ -60,7 +41,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter">
 			<bean
-				class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+					class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="showSql" value="false" />
 				<property name="generateDdl" value="false" />
 				<property name="databasePlatform" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
@@ -85,8 +66,8 @@
 	</bean>
 	<!-- 定义了与实体相关的dao -->
 	<bean id="genericEntityDao"
-		class="com.tomowork.shop.core.base.GenericEntityDao" scope="prototype"
-		lazy-init="true">
+		  class="com.tomowork.shop.core.base.GenericEntityDao" scope="prototype"
+		  lazy-init="true">
 	</bean>
 
 	<!-- 文件管理器 -->
@@ -160,21 +141,27 @@
 		<property name="lookupStubOnStartup" value="false" />
 		<property name="refreshStubOnConnectFailure" value="true" />
 	</bean>
-	
+
 	<!-- 订单号生成器 -->
 	<bean id="orderNumberGenerator" class="com.tomowork.shop.core.tools.order.impl.OrderNumberGeneratorImpl">
 		<property name="serverId" value="${orderNumberGenerator.serverId}"/>
 	</bean>
 
 	<bean id="assetsUriFactory"
-	      class="com.tomowork.shop.util.BaseURIFactoryBean">
+		  class="com.tomowork.shop.util.BaseURIFactoryBean">
 		<property name="uri" value="${assets.url}" />
 	</bean>
 
 	<bean id="imageUriFactory"
-	      class="com.tomowork.shop.util.HashURIFactoryBean">
+		  class="com.tomowork.shop.util.HashURIFactoryBean">
 		<property name="uris" value="${images.url}" />
 	</bean>
+
+	<beans profile="testing">
+		<context:property-placeholder location="classpath:config-test.properties" ignore-unresolvable="true" />
+
+		<jee:jndi-lookup id="dataSource" jndi-name="jdbc/ShopDB" expected-type="javax.sql.DataSource" />
+	</beans>
 
 	<beans profile="dev">
 		<context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true" />
