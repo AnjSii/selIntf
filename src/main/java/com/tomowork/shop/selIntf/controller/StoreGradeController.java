@@ -1,6 +1,5 @@
 package com.tomowork.shop.selIntf.controller;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
@@ -42,10 +41,10 @@ public class StoreGradeController {
 	 * @return HttpStatus
 	 * @throws URISyntaxException URI不正确
 	 */
-	@RequestMapping(value = "/storeGradnes", method = RequestMethod.POST)
+	@RequestMapping(value = "/storeGrade", method = RequestMethod.POST)
 	@ApiVersion(major = 1)
-	public ResponseEntity<Object> createStoreApplication(@RequestParam("storeGradeId") Long storeGradeId, Principal principal) throws URISyntaxException {
-		Long storeId = this.mobileStoreGradeService.applyGrade(storeGradeId, principal.getName());
-		return ResponseEntity.created(new URI("/store/" + storeId)).build();
+	public ResponseEntity<Object> applyStoreGradnes(@RequestParam("storeGradeId") Long storeGradeId, Principal principal) throws URISyntaxException {
+		this.mobileStoreGradeService.applyGrade(storeGradeId, principal.getName());
+		return ResponseEntity.noContent().build();
 	}
 }

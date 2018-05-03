@@ -34,7 +34,7 @@ public class StoreApplicationController {
 	private StoreApplicationService createStoreService;
 
 	/**
-	 * 查看申请店铺详情
+	 * 申请店铺
 	 * @param principal 用来获取登陆用户的用户名
 	 * @param createStoreVO 申请店铺信息
 	 * @return HttpStatus

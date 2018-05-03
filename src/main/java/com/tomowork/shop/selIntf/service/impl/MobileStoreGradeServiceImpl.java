@@ -84,7 +84,7 @@ public class MobileStoreGradeServiceImpl implements MobileStoreGradeService {
 	}
 
 	@Override
-	public Long applyGrade(Long storeGradeId, String userName) throws NullPointerException, IllegalArgumentException, ViolationException {
+	public void applyGrade(Long storeGradeId, String userName) throws NullPointerException, IllegalArgumentException, ViolationException {
 		if (storeGradeId == null || userName == null) {
 			throw new NullPointerException();
 		}
@@ -127,6 +127,5 @@ public class MobileStoreGradeServiceImpl implements MobileStoreGradeService {
 			case -1:
 				throw new ViolationException("您的店铺审核被拒绝");
 		}
-		return store.getId();
 	}
 }

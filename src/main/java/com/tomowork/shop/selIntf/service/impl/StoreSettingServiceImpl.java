@@ -211,7 +211,7 @@ public class StoreSettingServiceImpl implements StoreSettinngService {
 	}
 
 	@Override
-	public Long storeSettinngImages(String userName, MultipartFile store_logo, MultipartFile store_banner) throws NullPointerException,
+	public void storeSettinngImages(String userName, MultipartFile store_logo, MultipartFile store_banner) throws NullPointerException,
 			IllegalArgumentException, EntityNotFoundException, ViolationException {
 		if (userName == null) {
 			throw new NullPointerException();
@@ -282,6 +282,5 @@ public class StoreSettingServiceImpl implements StoreSettinngService {
 				}
 			}
 		}
-		return store.getId();
 	}
 }

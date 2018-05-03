@@ -43,5 +43,5 @@ public interface StoreSettinngService {
 	 * @throws EntityNotFoundException 铺没有找到\还没有申请店铺
 	 * @throws ViolationException 图片格式不正确
 	 */
-	Long storeSettinngImages(String userName, MultipartFile store_logo, MultipartFile store_banner) throws NullPointerException, IllegalArgumentException, ViolationException;
+	void storeSettinngImages(String userName, MultipartFile store_logo, MultipartFile store_banner) throws NullPointerException, IllegalArgumentException, ViolationException;
 }

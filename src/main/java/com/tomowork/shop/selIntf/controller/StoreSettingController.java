@@ -1,6 +1,5 @@
 package com.tomowork.shop.selIntf.controller;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 
@@ -35,7 +34,7 @@ public class StoreSettingController {
 	 */
 	@RequestMapping(value = "/store/setting", method = RequestMethod.GET)
 	@ApiVersion(major = 1)
-	public ResponseEntity<Object> getStoreApplication(Principal principal) {
+	public ResponseEntity<Object> getStoreSetting(Principal principal) {
 		StoreSettingVO storeSettingVO = this.storeSettinngService.getStoreSeting(principal.getName());
 		return new ResponseEntity<>(storeSettingVO, HttpStatus.OK);
 	}
@@ -48,7 +47,7 @@ public class StoreSettingController {
 	 */
 	@RequestMapping(value = "/store/setting", method = RequestMethod.PATCH)
 	@ApiVersion(major = 1)
-	public ResponseEntity<Object> alterStoreApplication(@RequestBody @Valid StoreSettingRequestVO storeSettingVO, Principal principal) {
+	public ResponseEntity<Object> alterStoreSetting(@RequestBody @Valid StoreSettingRequestVO storeSettingVO, Principal principal) {
 		this.storeSettinngService.alterStoreSetting(storeSettingVO, principal.getName());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
@@ -63,12 +62,12 @@ public class StoreSettingController {
 	 */
 	@RequestMapping(value = "/store/storeSettinngImages", method = RequestMethod.POST)
 	@ApiVersion(major = 1)
-	public ResponseEntity<Object> imagesAuthenticate(Principal principal,
+	public ResponseEntity<Object> storeImages(Principal principal,
 			@RequestParam(value = "store_logo", required = false) MultipartFile store_logo,
 			@RequestParam(value = "store_banner", required = false) MultipartFile store_banner)
 			throws URISyntaxException {
-		Long storeId = this.storeSettinngService.storeSettinngImages(principal.getName(), store_logo, store_banner);
-		return ResponseEntity.created(new URI("/store/" + storeId)).build();
+		this.storeSettinngService.storeSettinngImages(principal.getName(), store_logo, store_banner);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	static class StoreSettingRequestVO extends StoreSettingVO {
