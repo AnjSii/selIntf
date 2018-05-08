@@ -21,6 +21,10 @@
 			<groupId>com.tomowork.shop</groupId>
 			<artifactId>shop-base</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.tomowork.shop</groupId>
+			<artifactId>shop-search</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.tomowork.shop</groupId>
