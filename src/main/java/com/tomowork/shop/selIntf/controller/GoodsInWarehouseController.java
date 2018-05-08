@@ -13,38 +13,50 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tomowork.shop.api.GoodsVO;
-import com.tomowork.shop.selIntf.service.MobileGoodsSoldService;
+import com.tomowork.shop.selIntf.service.GoodsInWarehouseService;
 import com.tomowork.spring.web.bind.annotation.ApiVersion;
 
 @RestController
 @Validated
-public class MobileGoodsSoldController {
+public class GoodsInWarehouseController {
 
 	@Autowired
-	private MobileGoodsSoldService mobileGoodsSoldService;
+	private GoodsInWarehouseService goodsInWarehouseService;
 
-	/**
-	 * 获取店出售中的商品
+	/**获取仓库中的商品
 	 * @param principal 用来获取登陆用户的用户名
 	 * @return HttpStatus
 	 */
-	@RequestMapping(value = "/goodsSold", method = RequestMethod.GET)
+	@RequestMapping(value = "/goodsInWarehouse", method = RequestMethod.GET)
 	@ApiVersion(major = 1)
 	public ResponseEntity<Object> getGoodsSoldList(Principal principal) {
-		List<GoodsVO> goodsVOList = this.mobileGoodsSoldService.getGoodsSold(principal.getName());
+		List<GoodsVO> goodsVOList = this.goodsInWarehouseService.getGoodsInWarehouse(principal.getName());
 		return new ResponseEntity<>(goodsVOList, HttpStatus.OK);
 	}
 
 	/**
-	 * 出售中的商品下架
+	 * 上架仓库中的商品
 	 * @param goodsId 商品id
 	 * @param principal 用来获取登陆用户的用户名
 	 * @return HttpStatus
 	 */
-	@RequestMapping(value = "/goodsSold/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/goodsInWarehouse/{id}", method = RequestMethod.PUT)
 	@ApiVersion(major = 1)
 	public ResponseEntity<Object> putInWarehouse(@PathVariable("id") Long goodsId, Principal principal) {
-		this.mobileGoodsSoldService.putInWarehouse(goodsId, principal.getName());
+		this.goodsInWarehouseService.goodsOnSale(goodsId, principal.getName());
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	/**
+	 * 删除仓库中的商品
+	 * @param goodsId 商品id
+	 * @param principal 用来获取登陆用户的用户名
+	 * @return HttpStatus
+	 */
+	@RequestMapping(value = "/goodsInWarehouse/{id}", method = RequestMethod.DELETE)
+	@ApiVersion(major = 1)
+	public ResponseEntity<Object> delGoodsOnSale(@PathVariable("id") Long goodsId, Principal principal) {
+		this.goodsInWarehouseService.delGetGoodsInWarehouse(goodsId, principal.getName());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 }

@@ -114,23 +114,26 @@ public class MobileGoodsSoldServiceImpl implements MobileGoodsSoldService {
 		}
 
 		User user = this.userService.getUserByUsername(userName);
+		Goods goods = this.goodsService.getObjById(goodsId);
 		Store store = user.getStore();
 		if (store == null) {
 			throw new EntityNotFoundException("您还没有申请店铺");
 		}
+		if (goods == null) {
+			throw new EntityNotFoundException("没有查询到商品");
+		}
+		if (!goods.getGoods_store().getId().equals(store.getId())) {
+			throw new EntityNotFoundException("当前商品不符合");
+		}
+		if (goods.getGoods_status() != 0) {
+			throw new ViolationException("当前商品不是正在出售中的商品");
+		}
+
 		int store_status = store.getStore_status();
 		switch (store_status) {
 			case 1:
 				throw new ViolationException("您的店铺正在审核中");
 			case 2:
-				Goods goods = this.goodsService.getObjById(goodsId);
-				if (goods == null) {
-					throw new EntityNotFoundException("没有查询到商品");
-				}
-				if (goods.getGoods_status() != 0) {
-					throw new ViolationException("当前商品不是出售中的商品");
-				}
-
 				goods.setGoods_status(1);
 				this.goodsService.update(goods);
 				SolrUtils.deleteById(CommUtil.null2String(goods.getId()));
